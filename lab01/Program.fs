@@ -53,24 +53,24 @@ let fabs (x: float) =
     else
         x
 
-let rec _iterations F x cond next =
+let rec _iterations x cond next =
     if cond x then
         x
     else
-        _iterations F (F x) cond next
+        _iterations (next x) cond next
 
 let iterations F x =
     let cond x = fabs (F x - x) <= EPS
     let next x = F x
-    _iterations F x cond next
+    _iterations x cond next
 
 let derivative f x =
     (f (x + EPS) - f x) / EPS
 
-let newthon F x =
-    let cond x = fabs (F x - x) <= EPS
-    let next x = x - F x / derivative F x
-    _iterations F x cond next
+let newthon f x =
+    let next x = x - f x / derivative f x
+    let cond x = fabs (next x - x) <= EPS
+    _iterations x cond next
 
 let rec dichotomy f (a: float) (b: float) =
     if b - a <= EPS then
@@ -95,9 +95,9 @@ let table_eq f1 F1 f2 F2 f3 F3 a1 b1 a2 b2 a3 b3 =
     printfn "+------+---------+-----------+---------+"
     printfn "| # eq |  Iters  | Dichotomy | Newthon |"
     printfn "+------+---------+-----------+---------+"
-    printfn "|    1 | %7.4f | %9.4f | %7.4f |" (iterations F1 a1) (dichotomy f1 a1 b1) (newthon F1 a1)
-    printfn "|    2 | %7.4f | %9.4f | %7.4f |" (iterations F2 a2) (dichotomy f2 a2 b2) (newthon F2 a2)
-    printfn "|    3 | %7.4f | %9.4f | %7.4f |" (iterations F3 a3) (dichotomy f3 a3 b3) (newthon F3 a3)
+    printfn "|    1 | %7.4f | %9.4f | %7.4f |" (iterations F1 a1) (dichotomy f1 a1 b1) (newthon f1 a1)
+    printfn "|    2 | %7.4f | %9.4f | %7.4f |" (iterations F2 a2) (dichotomy f2 a2 b2) (newthon f2 a2)
+    printfn "|    3 | %7.4f | %9.4f | %7.4f |" (iterations F3 a3) (dichotomy f3 a3 b3) (newthon f3 a3)
     printfn "+------+---------+-----------+---------+"
 
 table_taylor Math.Sinh dumb_taylor smart_taylor POINTS 0. 1.
